@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>SSE in Asp.Net Core</title>
+</head>
+<body>
+    <button>Close the connection</button>
+    <ul id="events"></ul>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("Initialising event source...");
+
+            var source = new EventSource("/");
+            var eventList = document.querySelector("ul");
+            var closeButton = document.querySelector("button");
+
+            function addEvent(event) {
+                var newElement = document.createElement("li");
+                newElement.innerHTML = event.data;
+                eventList.appendChild(newElement);
+            }
+
+            source.addEventListener("open", function (event) {
+                console.log("Opened connection: " + event);
+                addEvent(event);
+            });
+
+            source.addEventListener('message', function (event) {
+                console.log("Received event: " + event);
+                addEvent(event);
+            });
+
+            source.addEventListener("error", function (event) {
+                console.log("EventSource error: " + event);
+                addEvent(event);
+            });
+
+            closeButton.addEventListener("click", function () {
+                console.log("Closing EventSource...");
+                source.close();
+                console.log("Successfully closed");
+            });
+
+            console.log("Successfully initialised");
+        }, false);
+    </script>
+</body>
+</html>
